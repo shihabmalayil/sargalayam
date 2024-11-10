@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const stage = window.location.href.split('/').pop();
-    const socket = new WebSocket("wss://sargalayam.onrender.com:3000");
+    const socket = new WebSocket("ws://sargalayam.onrender.com:3000");
     const programList = document.getElementById('program-list');
     const selectedProgramDisplay = document.getElementById('selected-program');
     const tvBrowserContent = document.getElementById('tv-browser-content');
