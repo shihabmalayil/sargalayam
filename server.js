@@ -7,6 +7,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const connectToDatabase = require('./db');
 const Programs = require('./model/Programs');
+require('dotenv').config();
 
 // Initialize Express app and HTTP server
 const app = express();
