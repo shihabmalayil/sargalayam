@@ -15,7 +15,11 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 // CORS configuration
-const allowedOrigins = ['http://localhost:3000', 'http://192.168.1.11:3000', 'https://api.openweathermap.org'];
+const allowedOrigins = ['http://localhost:3000',
+    'http://192.168.1.11:3000',
+    'https://api.openweathermap.org',
+    'sargalayam.onrender.com:3000',
+'https://sargalayam.onrender.com:3000'];
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST'],
