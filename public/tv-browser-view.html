@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sargalayam TV Browser</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            background: #f5e1a4;
+            margin:0;
+            padding:0;
+            overflow-x: hidden;
+            font-family: "Nunito", sans-serif;
+        }
+        #header{
+            height: 100px;
+            background-color: #380c01;
+        }
+        .w-full{
+            width:100%;
+            float:left;
+            text-align: center;
+        }
+        #programList{
+            padding:3% 0;
+        }
+        .stage{
+            width: 20%;
+            margin:10px;
+            display:inline-block;
+            min-height: 300px;
+            background-color:#f0d48a;
+            padding:0 0 10px 0;
+            vertical-align:top;
+        }
+        #footer{
+            height:auto;
+            background-color: #380c01;
+        }
+        .stage span.time{
+            background: #686464;
+            color: white;
+            padding: 0px 3px;
+        }
+        .name{
+            font-weight: bold;
+            font-size:25px;
+            background:#610035;
+            text-align:center;
+            padding:5px 0;
+            color:white;
+        }
+        .programs{
+            margin-top:20px;
+        }
+        .program{
+            border: 1px solid #3d3d3d;
+            display:block;
+            padding:20px 5px 7px 5px;
+            margin: 5px 10px;
+            position:relative;
+        }
+        .program .category{
+            position: absolute;
+            background: #3d3d3d;
+            color: white;
+            padding:3px 10px;
+            top:-10px;
+            left:-1px;
+        }
+        .logo{
+            width:auto;
+            height:100px;
+            float: left;
+            margin-left: 15px;
+        }
+        .samastha{
+            width:140px;
+            padding: 25px 10px;
+            float: right;
+            margin-right:15px;
+            background: white;
+        }
+        .samastha img{
+            width:100%;
+        }
+        .slogo{
+            width:auto;
+            height:70px;
+            float: left;
+            margin-left: 15px;
+            background: white;
+            padding:10px;
+        }
+        .weather-time{
+            width:auto;
+            height:80px;
+            float: right;
+            margin-right:15px;
+            position:relative;
+        }
+        .icon{
+            margin-top:-50px;
+        }
+        .temp{
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            top: 33px;
+            font-weight: 400;
+            font-style: normal;
+            left:0;
+            right:0;
+            margin: auto;
+        }
+        .upcoming_container {
+            padding:10px;
+        }
+        .upcoming{
+            margin-top: 15px;
+            font-size:14px;
+
+        }
+        .upcoming-list{
+            margin: 5px 0;
+            border: 1px solid #a5a5a5;
+            margin-bottom:3px;
+        }
+        .upcoming-list .block{
+            width: 100%;
+            padding:7px 5px;
+            display:block;
+            text-align: left;
+        }
+        .upcoming_title span{
+            display: block;
+            padding:5px 0;
+        }
+        .upcoming_title{
+            padding:0;
+        }
+        .upcoming_title span{
+            background: #7c3838;
+            color: white;
+            position:relative;
+        }
+        .upcoming_title .time{
+            position:absolute;
+        }
+        #news{
+            width: 70%;
+            float:left;
+            padding: 10px 20px;
+            text-align:left;
+            color:white;
+            font-size:20px;
+        }
+        #clock{
+            color:white;
+            font-size: 20px;
+            margin-top:30px;
+            float:left;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <script>
+        // Create a new WebSocket connection
+        const websocket = new WebSocket("ws://localhost:3000"); // Change to your server URL
+
+        websocket.onopen = function() {
+            console.log('WebSocket connection established');
+        };
+
+        websocket.onmessage = function(event) {
+            console.log(`Message from server: ${event.data}`);
+        };
+
+        websocket.onclose = function() {
+            console.log('WebSocket connection closed');
+        };
+
+        // Listen for messages from the server
+        websocket.onmessage = function(event) {
+            const data = JSON.parse(event.data); // Assuming data is sent as JSON
+            console.log(data);
+            if (!data.programId) {
+                updateNews(data);
+            } else {
+                updatePrograms(data);
+            }
+        };
+
+        function updateNews(data) {
+            const newsBlock = document.getElementById('news');
+            newsBlock.getElementsByClassName('content')[0].textContent = data.news;
+        }
+
+        function updatePrograms(data) {
+            // Update stage1Programs and stage2Programs with new data
+            console.log(data);
+            const stageOne = document.getElementById('stage1')
+            const stageTwo = document.getElementById('stage2')
+            const stageThree = document.getElementById('stage3')
+            const stageFour = document.getElementById('stage4')
+
+            if (data.stageTitle === 'Stage 1') {
+                stageOne.getElementsByClassName('item-name')[0].textContent = data.programName;
+                stageOne.getElementsByClassName('category')[0].textContent = data.category;
+                const list = stageOne.getElementsByClassName('upcoming-list')[0];
+                list.innerHTML = '';
+                let appendedCount = 0; // Counter for appended items
+                data.programs.forEach(program => {
+                    if (appendedCount >= 2) return; // Stop if 2 items have been appended
+                    if (program.status === 0 && program._id !== data.programId) {
+                        // Create a new block element for each program
+                        const block = document.createElement('div');
+                        block.classList.add('block');
+
+                        // Set the inner HTML for the block
+                        block.innerHTML = `<span class="time">${program.time}</span>
+                            ${program.category} ${program.name}`;
+
+                        // Append the block to the list
+                        list.appendChild(block);
+                        appendedCount++; // Increment the counter
+                    }
+                });
+            }
+
+            if (data.stageTitle === 'Stage 2') {
+                stageTwo.getElementsByClassName('item-name')[0].textContent = data.programName;
+                stageTwo.getElementsByClassName('category')[0].textContent = data.category;
+                const list = stageTwo.getElementsByClassName('upcoming-list')[0];
+                list.innerHTML = '';
+                let appendedCount = 0; // Counter for appended items
+                data.programs.forEach(program => {
+                    if (appendedCount >= 2) return; // Stop if 2 items have been appended
+                    if (program.status === 0 && program._id !== data.programId) {
+                        // Create a new block element for each program
+                        const block = document.createElement('div');
+                        block.classList.add('block');
+
+                        // Set the inner HTML for the block
+                        block.innerHTML = `<span class="time">${program.time}</span>
+                            ${program.category} ${program.name}`;
+
+                        // Append the block to the list
+                        list.appendChild(block);
+                        appendedCount++; // Increment the counter
+                    }
+                });
+            }
+
+            if (data.stageTitle === 'Stage 3') {
+                stageThree.getElementsByClassName('item-name')[0].textContent = data.programName;
+                stageThree.getElementsByClassName('category')[0].textContent = data.category;
+                const list = stageThree.getElementsByClassName('upcoming-list')[0];
+                list.innerHTML = '';
+                let appendedCount = 0; // Counter for appended items
+                data.programs.forEach(program => {
+                    if (appendedCount >= 2) return; // Stop if 2 items have been appended
+                    if (program.status === 0 && program._id !== data.programId) {
+                        // Create a new block element for each program
+                        const block = document.createElement('div');
+                        block.classList.add('block');
+
+                        // Set the inner HTML for the block
+                        block.innerHTML = `<span class="time">${program.time}</span>
+                            ${program.category} ${program.name}`;
+
+                        // Append the block to the list
+                        list.appendChild(block);
+                        appendedCount++; // Increment the counter
+                    }
+                });
+            }
+
+            if (data.stageTitle === 'Stage 4') {
+                stageFour.getElementsByClassName('item-name')[0].textContent = data.programName;
+                stageFour.getElementsByClassName('category')[0].textContent = data.category;
+                const list = stageFour.getElementsByClassName('upcoming-list')[0];
+                list.innerHTML = '';
+                let appendedCount = 0; // Counter for appended items
+                data.programs.forEach(program => {
+                    if (appendedCount >= 2) return; // Stop if 2 items have been appended
+                    if (program.status === 0 && program._id !== data.programId) {
+                        // Create a new block element for each program
+                        const block = document.createElement('div');
+                        block.classList.add('block');
+
+                        // Set the inner HTML for the block
+                        block.innerHTML = `<span class="time">${program.time}</span>
+                            ${program.category} ${program.name}`;
+
+                        // Append the block to the list
+                        list.appendChild(block);
+                        appendedCount++; // Increment the counter
+                    }
+                });
+            }
+
+            // data.stage1.forEach(program => {
+            //     const programItem = document.createElement('div');
+            //     programItem.className = 'program-item';
+            //     programItem.innerHTML = `<img class="channel-icon" src="${program.icon}" alt="${program.name}"><span class="program-name">${program.name}</span>`;
+            //     document.getElementById('stage1Programs').appendChild(programItem);
+            // });
+            //
+            // data.stage2.forEach(program => {
+            //     const programItem = document.createElement('div');
+            //     programItem.className = 'program-item';
+            //     programItem.innerHTML = `<img class="channel-icon" src="${program.icon}" alt="${program.name}"><span class="program-name">${program.name}</span>`;
+            //     document.getElementById('stage2Programs').appendChild(programItem);
+            // });
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+        // // Example function to send data to the server
+            function weatherUpdate() {
+                fetch('/weather', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    document.getElementsByClassName('temp')[0].textContent = '';
+                    document.getElementsByClassName('temp')[0].textContent = Math.round(data.main.temp)+'°';
+                    document.getElementsByClassName('icon')[0].innerHTML = '';
+                    document.getElementsByClassName('icon')[0].innerHTML = '<img src="/img/'+data.weather[0].icon+'@2x.png" alt=""/>';
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            }
+            weatherUpdate();
+
+            // Set interval to call the function every 30 minutes (30 * 60 * 1000 milliseconds)
+            setInterval(weatherUpdate, 15 * 60 * 1000);
+
+            function updateClock() {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+
+                // Convert to 12-hour format and determine AM/PM
+                const amPm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12; // Convert hour '0' to '12' for 12 AM/PM
+
+                const timeString = `${String(hours).padStart(2, '0')}:${minutes} ${amPm}`;
+                document.getElementById('clock').textContent = timeString;
+            }
+
+// Update the clock every second
+            setInterval(updateClock, 1000);
+            updateClock();  // Call it once to display immediately
+        });
+    </script>
+</head>
+<body>
+<div id="tv-browser-container w-full">
+    <div id="header" class="w-full">
+        <img src="/img/logo.png" class="logo" alt="" />
+        <div class="samastha">
+            <img src="/img/Samastha-Flag.png" class="" alt="" />
+        </div>
+    </div>
+    <div id="programList" class="w-full"> <!-- This is the new container -->
+        <div id="stage1" class="stage">
+            <span class="name w-full">Stage 1</span>
+            <div class="programs w-full">
+                <div class="program full">
+                    <span class="category">Sub Junior</span>
+                    <span class="item-name">Madhu-Nabi</span>
+                </div>
+                <div class="upcoming w-full">
+                    <div class="upcoming_container">
+                        <div class="upcoming_title w-full">
+                            <span class="">Upcoming</span>
+                        </div>
+
+                        <div class="upcoming-list w-full">
+                            <span>Item 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="stage2" class="stage ">
+            <span class="name w-full">Stage 2</span>
+            <div class="programs w-full">
+                <div class="program full">
+                    <span class="category">Sub Junior</span>
+                    <span class="item-name">Madhu-Nabi</span>
+                </div>
+                <div class="upcoming w-full">
+                    <div class="upcoming_container">
+                        <div class="upcoming_title w-full">
+                            <span class="">Upcoming</span>
+                        </div>
+
+                        <div class="upcoming-list w-full">
+                            <span>Item 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="stage3" class="stage">
+            <span class="name w-full">Stage 3</span>
+            <div class="programs w-full">
+                <div class="program full">
+                    <span class="category">Sub Junior</span>
+                    <span class="item-name">Madhu-Nabi</span>
+                </div>
+                <div class="upcoming w-full">
+                    <div class="upcoming_container">
+                        <div class="upcoming_title w-full">
+                            <span class="">Upcoming</span>
+                        </div>
+
+                        <div class="upcoming-list w-full">
+                            <span>Item 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="stage4" class="stage ">
+            <span class="name w-full">Stage 4</span>
+            <div class="programs w-full">
+                <div class="program full">
+                    <span class="category">Sub Junior</span>
+                    <span class="item-name">Madhu-Nabi</span>
+                </div>
+                <div class="upcoming w-full">
+                    <div class="upcoming_container">
+                        <div class="upcoming_title w-full">
+                            <span class="">Upcoming</span>
+                        </div>
+
+                        <div class="upcoming-list w-full">
+                            <span>Item 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer" class="w-full">
+        <img src="/img/Sargalayam-Logo.png" class="slogo" alt=""/>
+        <div id="news">
+            <p class="content"></p>
+        </div>
+        <div id="clock" class="clock"></div>
+        <div class="weather-time">
+            <div class="icon"></div>
+            <span class="temp"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+</body>
+</html>

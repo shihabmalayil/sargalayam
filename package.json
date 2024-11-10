@@ -1,0 +1,23 @@
+{
+  "name": "music-competition-dashboard",
+  "version": "1.0.0",
+  "description": "Node.js Express.js WebSocket server for music competition dashboard",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "type": "module"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.10",
+    "express": "^4.17.1",
+    "http": "^0.0.1-security",
+    "mongodb": "^6.10.0",
+    "mongoose": "^8.8.1",
+    "node-fetch": "^3.3.2",
+    "path": "^0.12.7",
+    "socket.io": "^4.8.1",
+    "ws": "^7.5.10"
+  }
+}

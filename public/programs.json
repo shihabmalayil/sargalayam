@@ -1,0 +1,22 @@
+{
+  "stage1": [
+    {"id": 1, "category": "Junior", "name": "Madhu-Nabi", "status":0},
+    {"id": 2, "category": "Senior", "name": "Qira-ath", "status":0},
+    {"id": 3, "category": "Sub Junior", "name": "Pencil Drwaing", "status":0}
+  ],
+  "stage2": [
+    {"id": 4, "category": "Kiddies", "name": "Madhu-Nabi", "status":0},
+    {"id": 5, "category": "Junior", "name": "Mappilapatu", "status":1},
+    {"id": 6, "category": "Senior", "name": "Elocation", "status":0}
+  ],
+  "stage3": [
+    {"id": 4, "category": "Kiddies", "name": "Madhu-Nabi", "status":0},
+    {"id": 5, "category": "Junior", "name": "Mappilapatu", "status":1},
+    {"id": 6, "category": "Senior", "name": "Elocation", "status":0}
+  ],
+  "stage4": [
+    {"id": 4, "category": "Kiddies", "name": "Madhu-Nabi", "status":0},
+    {"id": 5, "category": "Junior", "name": "Mappilapatu", "status":1},
+    {"id": 6, "category": "Junior", "name": "Elocation", "status":0}
+  ]
+}
