@@ -6,7 +6,7 @@ const { updateGlobalTvScreenData, getUpdatedTvScreenData } = require('./tv-scree
 const http = require('http');
 const WebSocket = require('ws');
 const connectToDatabase = require('./db');
-const Programs = require('./model/Programs');
+const Programs = require('./model/programs');
 require('dotenv').config();
 
 // Initialize Express app and HTTP server
